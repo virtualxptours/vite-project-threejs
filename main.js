@@ -177,11 +177,11 @@ const targetPositions = [
 const elementIds = ["navButton1", "navButton2", "navButton3", "navButton4", "originalPosition"];
 
 const textContent = {
-  "navButton1": "Text for Position 1",
-  "navButton2": "Text for Position 2",
-  "navButton3": "Text for Position 3",
-  "navButton4": "Text for Position 4",
-  "originalPosition": "Text for Original Position"
+  "navButton1": "Commitment",
+  "navButton2": "Loyalty",
+  "navButton3": "Honor",
+  "navButton4": "Courage",
+  "originalPosition": "The Diamond"
 };
 
 let currentTextElement = null; // Keep track of the currently displayed text element
