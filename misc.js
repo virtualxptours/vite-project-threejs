@@ -52,3 +52,26 @@ const tween = new TWEEN.Tween({x:0})
     base.position.x = coords.x;
   });
 tween.start();
+
+
+
+// Function to handle device orientation
+function handleOrientation(event) {
+  if (!event.alpha ||!event.beta ||!event.gamma) return; // Check if data is available
+
+  // Adjust these values for sensitivity
+  const alpha = THREE.MathUtils.degToRad(event.alpha); 
+  const beta = THREE.MathUtils.degToRad(event.beta);
+  const gamma = THREE.MathUtils.degToRad(event.gamma);
+
+  // Calculate rotation (you might need to adjust the axes and order)
+  base.rotation.set(beta, alpha, -gamma, 'YXZ'); 
+}
+
+// Check if the device is a mobile device
+if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+  window.addEventListener('deviceorientation', handleOrientation);
+} else {
+  // For desktop, use mouse controls (or you can disable rotation entirely)
+  canvas.addEventListener("mousemove", onMouseMove, false);
+}

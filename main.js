@@ -141,26 +141,72 @@ function changeBackgroundColor() {
     fadeStep();//Start the animation
 }
 
-// Function to handle device orientation
-function handleOrientation(event) {
-  if (!event.alpha ||!event.beta ||!event.gamma) return; // Check if data is available
+let smoothedAlpha = 0;
+let smoothedBeta = 0;
+let smoothedGamma = 0;
+let hasOrientationPermission = false; // Track permission status
 
-  // Adjust these values for sensitivity
-  const alpha = THREE.MathUtils.degToRad(event.alpha); 
+function handleOrientation(event) {
+  if (!hasOrientationPermission) return; // Only process if permission granted
+
+  if (!event.alpha || !event.beta || !event.gamma) return;
+
+  const alpha = THREE.MathUtils.degToRad(event.alpha);
   const beta = THREE.MathUtils.degToRad(event.beta);
   const gamma = THREE.MathUtils.degToRad(event.gamma);
 
-  // Calculate rotation (you might need to adjust the axes and order)
-  base.rotation.set(beta, alpha, -gamma, 'YXZ'); 
+  const smoothingFactor = 0.1;
+  smoothedAlpha = smoothedAlpha * (1 - smoothingFactor) + alpha * smoothingFactor;
+  smoothedBeta = smoothedBeta * (1 - smoothingFactor) + beta * smoothingFactor;
+  smoothedGamma = smoothedGamma * (1 - smoothingFactor) + gamma * smoothingFactor;
+
+  base.rotation.set(smoothedBeta, smoothedAlpha, -smoothedGamma, 'YXZ');
 }
 
-// Check if the device is a mobile device
-if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-  window.addEventListener('deviceorientation', handleOrientation);
-} else {
-  // For desktop, use mouse controls (or you can disable rotation entirely)
-  canvas.addEventListener("mousemove", onMouseMove, false);
+function requestOrientationPermission() {
+  if (typeof DeviceOrientationEvent.requestPermission === 'function') {  // Check for the new API
+    DeviceOrientationEvent.requestPermission()
+      .then(permissionState => {
+        if (permissionState === 'granted') {
+          hasOrientationPermission = true;
+          window.addEventListener('deviceorientation', handleOrientation);
+        } else {
+          console.log('Device orientation permission denied.');
+          // Handle denied permission (e.g., show alternative controls)
+          canvas.addEventListener("mousemove", onMouseMove, false); // Desktop Fallback
+        }
+      })
+      .catch(error => {
+        console.error('Error requesting device orientation permission:', error);
+        // Handle error (e.g., show an error message)
+        canvas.addEventListener("mousemove", onMouseMove, false); // Desktop Fallback
+      });
+  } else {
+    // Older browsers or browsers that don't support the new permission API.
+    // Fallback to the older approach (which might not prompt the user):
+    console.log("Device Orientation Event Request Permission is not supported. Using legacy method.");
+    hasOrientationPermission = true; // Assume granted (may not be the case)
+    window.addEventListener('deviceorientation', handleOrientation);
+  }
 }
+
+if (window.DeviceOrientationEvent) {
+  // Show a button or other UI element to trigger permission request
+  const permissionButton = document.createElement('button');
+  permissionButton.textContent = 'Enable Device Orientation';
+  permissionButton.addEventListener('click', requestOrientationPermission);
+  document.body.appendChild(permissionButton); // Add the button to your page
+
+  // If you want to automatically request permission on page load (less user-friendly):
+  // requestOrientationPermission();
+
+} else {
+  console.log("Device orientation not supported.");
+  canvas.addEventListener("mousemove", onMouseMove, false); // Desktop Fallback
+}
+
+
+// ... (rest of your code, including onMouseMove function if needed)
 
 
 // Target Positions (example - you can customize these)
