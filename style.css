@@ -35,3 +35,54 @@ canvas {
 .close-button:hover {
   background-color: rgba(0, 0, 0, 0.8); /* Darker on hover */
 }
+
+.permissionBtn {
+  position: fixed; /* Stays in place even when scrolling */
+  bottom: 20px; /* Adjust distance from bottom */
+  right: 20px; /* Adjust distance from right */
+  padding: 10px 20px; /* Adjust padding as needed */
+  background-color: transparent; /* Make background transparent so SVG shows */
+  border: 2px solid white; /* White outline */
+  color: white; /* Text color */
+  border-radius: 5px; /* Rounded corners (optional) */
+  cursor: pointer; /* Indicate it's clickable */
+  /* Add the SVG as a background image */
+  background-image: url("node_modules/bootstrap-icons/icons/globe.svg"); /* Path to your SVG */
+  background-size: 20px 20px; /* Adjust SVG size */
+  background-repeat: no-repeat;
+  background-position: center; /* Center the SVG */
+  padding-left: 40px; /* Add padding to the left to make space for the icon */
+  display: flex; /* Use flexbox for alignment */
+  align-items: center; /* Vertically center content */
+  justify-content: center; /* Horizontally center content */
+  /* Optional: Add a subtle shadow for depth */
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  /* Optional: Add a transition for hover effects */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.permissionBtn:hover {
+  background-color: rgba(255, 255, 255, 0.2); /* Slightly darker background on hover */
+  box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3); /* More prominent shadow on hover */
+}
+
+.permissionBtn:focus {
+  outline: none; /* Remove default focus outline */
+  border-color: lightblue; /* Change border color on focus (optional) */
+}
+
+/* Optional: Styles for the button text (if any) */
+.permissionBtn span { /* Or target a specific class or element within the button */
+  margin-left: 5px; /* Add space between icon and text */
+}
+
+/* Example media query for smaller screens: */
+@media (max-width: 768px) {
+  .permissionBtn {
+    bottom: 10px;
+    right: 10px;
+    font-size: 14px; /* Adjust font size */
+    padding: 8px 16px;
+    background-size: 15px 15px
+  }
+}

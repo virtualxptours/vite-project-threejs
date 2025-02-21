@@ -193,7 +193,8 @@ function requestOrientationPermission() {
 if (window.DeviceOrientationEvent) {
   // Show a button or other UI element to trigger permission request
   const permissionButton = document.createElement('button');
-  permissionButton.textContent = 'Enable Device Orientation';
+  //permissionButton.textContent = 'Enable Device Orientation';
+  permissionButton.classList.add('permissionBtn');
   permissionButton.addEventListener('click', requestOrientationPermission);
   document.body.appendChild(permissionButton); // Add the button to your page
 
