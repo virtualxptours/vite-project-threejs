@@ -198,7 +198,7 @@ if (window.DeviceOrientationEvent) {
   document.body.appendChild(permissionButton); // Add the button to your page
 
   // If you want to automatically request permission on page load (less user-friendly):
-  // requestOrientationPermission();
+  requestOrientationPermission();
 
 } else {
   console.log("Device orientation not supported.");
