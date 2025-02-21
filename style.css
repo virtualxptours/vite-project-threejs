@@ -86,3 +86,9 @@ canvas {
     background-size: 15px 15px
   }
 }
+
+.permissionBtn.granted { 
+  background-color: green; 
+}.permissionBtn.denied { 
+  background-color: red; 
+} 

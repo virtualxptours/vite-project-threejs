@@ -144,7 +144,8 @@ function changeBackgroundColor() {
 let smoothedAlpha = 0;
 let smoothedBeta = 0;
 let smoothedGamma = 0;
-let hasOrientationPermission = false; // Track permission status
+let hasOrientationPermission = false;
+let isOrientationEnabled = false; // Track if the feature is enabled
 
 function handleOrientation(event) {
   if (!hasOrientationPermission) return; // Only process if permission granted
@@ -164,22 +165,30 @@ function handleOrientation(event) {
 }
 
 function requestOrientationPermission() {
-  if (typeof DeviceOrientationEvent.requestPermission === 'function') {  // Check for the new API
+  if (typeof DeviceOrientationEvent.requestPermission === 'function') {
     DeviceOrientationEvent.requestPermission()
-      .then(permissionState => {
+    .then(permissionState => {
         if (permissionState === 'granted') {
           hasOrientationPermission = true;
-          window.addEventListener('deviceorientation', handleOrientation);
+          // Only add the event listener if the feature is enabled
+          if (isOrientationEnabled) {
+            window.addEventListener('deviceorientation', handleOrientation);
+          }
+          //permissionButton.textContent = isOrientationEnabled? 'Disable Device Orientation': 'Enable Device Orientation';
+          permissionButton.classList.add('granted'); // Add the 'granted' class
+          permissionButton.classList.remove('denied'); // Remove the 'denied' class (if present)
         } else {
           console.log('Device orientation permission denied.');
-          // Handle denied permission (e.g., show alternative controls)
-          canvas.addEventListener("mousemove", onMouseMove, false); // Desktop Fallback
+          handlePermissionDenied();
+          permissionButton.classList.add('denied'); // Add the 'denied' class
+          permissionButton.classList.remove('granted'); // Remove the 'granted' class (if present)
         }
       })
-      .catch(error => {
+    .catch(error => {
         console.error('Error requesting device orientation permission:', error);
-        // Handle error (e.g., show an error message)
-        canvas.addEventListener("mousemove", onMouseMove, false); // Desktop Fallback
+        handlePermissionDenied();
+        permissionButton.classList.add('denied'); // Add the 'denied' class
+        permissionButton.classList.remove('granted'); // Remove the 'granted' class (if present)
       });
   } else {
     // Older browsers or browsers that don't support the new permission API.
@@ -191,12 +200,31 @@ function requestOrientationPermission() {
 }
 
 if (window.DeviceOrientationEvent) {
-  // Show a button or other UI element to trigger permission request
   const permissionButton = document.createElement('button');
-  //permissionButton.textContent = 'Enable Device Orientation';
   permissionButton.classList.add('permissionBtn');
-  permissionButton.addEventListener('click', requestOrientationPermission);
-  document.body.appendChild(permissionButton); // Add the button to your page
+  //permissionButton.textContent = 'Enable Device Orientation';
+  permissionButton.addEventListener('click', () => {
+    if (!hasOrientationPermission) {
+      // If permission hasn't been granted yet, request it
+      requestOrientationPermission();
+    } else {
+      // Otherwise, toggle the enabled state
+      isOrientationEnabled =!isOrientationEnabled;
+      //permissionButton.textContent = isOrientationEnabled? 'Disable Device Orientation': 'Enable Device Orientation';
+      
+
+      if (isOrientationEnabled) {
+        window.addEventListener('deviceorientation', handleOrientation);
+        permissionButton.classList.add('granted'); // Add the 'granted' class
+        permissionButton.classList.remove('denied'); // Remove the 'denied' class (if present)
+      } else {
+        window.removeEventListener('deviceorientation', handleOrientation);
+        permissionButton.classList.add('denied'); // Add the 'denied' class
+        permissionButton.classList.remove('granted'); // Remove the 'granted' class (if present)
+      }
+    }
+  });
+  document.body.appendChild(permissionButton);
 
   // If you want to automatically request permission on page load (less user-friendly):
   requestOrientationPermission();
